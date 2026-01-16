@@ -1,0 +1,38 @@
+services:
+  # PostgreSQL Database
+  postgres:
+    image: postgres:15-alpine
+    container_name: hi-studio-db
+    environment:
+      POSTGRES_DB: hi_studio_db
+      POSTGRES_USER: hi_studio_user
+      POSTGRES_PASSWORD: hi_studio_password
+      PGUSER: hi_studio_user
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    networks:
+      - hi-studio-network
+    restart: unless-stopped
+
+  # Redis for caching and sessions
+  redis:
+    image: redis:7-alpine
+    container_name: hi-studio-redis
+    command: redis-server --appendonly yes
+    volumes:
+      - redis_data:/data
+    ports:
+      - "6379:6379"
+    networks:
+      - hi-studio-network
+    restart: unless-stopped
+
+volumes:
+  postgres_data:
+  redis_data:
+
+networks:
+  hi-studio-network:
+    driver: bridge
